@@ -1,0 +1,21 @@
+.box-breathing-visual {
+  width: 150px;
+  height: 150px;
+  border: 4px solid #3b82f6; /* blue-500 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: box-breathing 16s infinite;
+}
+.box-breathing-text {
+  font-weight: bold;
+  color: #3b82f6;
+}
+
+@keyframes box-breathing {
+  0%   { transform: scale(1); background-color: #eff6ff; } /* blue-50 */
+  25%  { transform: scale(1.2); background-color: #dbeafe; } /* blue-100 */
+  50%  { transform: scale(1); background-color: #eff6ff; }
+  75%  { transform: scale(0.8); background-color: #bfdbfe; } /* blue-200 */
+  100% { transform: scale(1); background-color: #eff6ff; }
+}

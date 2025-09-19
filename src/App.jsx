@@ -7,10 +7,15 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Screening from "./pages/Screening.jsx";
 import Resources from "./pages/Resources.jsx";
 import Booking from "./pages/Booking.jsx";
-import Chatbot from "./pages/Chatbot.jsx";
+import ChatHub from './pages/ChatHub.jsx';
+import TextChat from './pages/TextChat.jsx';
+import VoiceChat from './pages/VoiceChat.jsx';
 import Jokes from './pages/Jokes.jsx';
 import Exercises from './pages/Exercises.jsx';
 import BubbleWrap from './pages/BubbleWrap.jsx';
+import MyJourney from './pages/MyJourney.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import AdminRoute from './components/AdminRoute.jsx';
 
 // Firebase Imports
 import { auth, googleProvider, facebookProvider } from "./firebase.js";
@@ -20,7 +25,8 @@ import {
   signInWithPopup,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  browserPopupRedirectResolver
 } from "firebase/auth";
 
 function App() {
@@ -64,20 +70,21 @@ function App() {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
     } catch (err) {
+      console.error("Google Login Error:", err);
       alert(err.message);
     }
   };
 
   const handleFacebookLogin = async () => {
     try {
-      await signInWithPopup(auth, facebookProvider);
+      await signInWithPopup(auth, facebookProvider, browserPopupRedirectResolver);
     } catch (err) {
       alert(err.message);
     }
   };
-
+  
   const handleLogout = () => {
     signOut(auth);
   };
@@ -95,10 +102,21 @@ function App() {
         <Route path="/screening" element={<Screening />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/booking" element={<Booking />} />
-        <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/chatbot" element={<ChatHub />} />
+        <Route path="/text-chat" element={<TextChat />} />
+        <Route path="/voice-chat" element={<VoiceChat />} />
         <Route path="/jokes" element={<Jokes />} />
         <Route path="/exercises" element={<Exercises />} />
         <Route path="/bubblewrap" element={<BubbleWrap />} />
+        <Route path="/my-journey" element={<MyJourney />} />
+        <Route 
+          path="/admin" 
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          } 
+        />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     );
@@ -107,9 +125,8 @@ function App() {
   // If user is NOT logged in, render the AuthPage UI
   return (
     <div className={`flex items-center justify-center min-h-screen bg-gradient-to-br ${isLoginView ? 'from-purple-200 via-pink-200 to-purple-300' : 'from-teal-200 via-cyan-200 to-blue-300'}`}>
-      <div className="bg-white/90 shadow-2xl rounded-2xl p-10 w-[400px] text-center relative backdrop-blur-sm">
+      <div className="bg-white/90 backdrop-blur-sm shadow-2xl rounded-2xl p-10 w-full max-w-sm text-center relative">
         {isLoginView ? (
-          // --- LOGIN VIEW ---
           <>
             <div className="flex justify-center -mt-20 mb-4">
               <div className="bg-purple-500 p-5 rounded-full shadow-lg">
@@ -123,43 +140,21 @@ function App() {
                 <span className="absolute left-3 top-3.5 text-gray-400"><FaUser /></span>
               </div>
               <div className="relative">
-                <input 
-                  type={showPassword ? "text" : "password"}
-                  name="password" 
-                  placeholder="Password" 
-                  className="w-full px-4 py-3 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400" required 
-                />
+                <input type={showPassword ? "text" : "password"} name="password" placeholder="Password" className="w-full px-4 py-3 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400" required />
                 <span className="absolute left-3 top-3.5 text-gray-400"><FaLock /></span>
-                <span 
-                  onClick={() => setShowPassword(!showPassword)} 
-                  className="absolute right-3 top-3.5 text-gray-500 cursor-pointer"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
+                <span onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-gray-500 cursor-pointer">{showPassword ? <FaEyeSlash /> : <FaEye />}</span>
               </div>
               <div className="text-right text-sm text-purple-600 cursor-pointer hover:underline">Forgot password?</div>
               <button type="submit" className="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-800 transition">LOGIN</button>
             </form>
             <p className="mt-6 text-gray-500 text-sm">Or sign in using</p>
             <div className="flex justify-center gap-6 mt-4">
-              <button 
-                onClick={handleGoogleLogin} 
-                className="bg-white border shadow-md p-3 rounded-full hover:scale-110 transition text-xl" 
-                aria-label="Login with Google"
-              >
-                <FaGoogle className="text-red-500" />
-              </button>
+              <button onClick={handleGoogleLogin} className="bg-white border shadow-md p-3 rounded-full hover:scale-110 transition text-xl" aria-label="Login with Google"><FaGoogle className="text-red-500" /></button>
               <button onClick={handleFacebookLogin} className="bg-white border shadow-md p-3 rounded-full hover:scale-110 transition" aria-label="Login with Facebook"><img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook" className="h-6 w-6" /></button>
             </div>
-            <p className="mt-6 text-gray-600 text-sm">
-              Don't have an account?{" "}
-              <span onClick={() => setIsLoginView(false)} className="text-purple-600 font-semibold cursor-pointer hover:underline">
-                SIGN UP
-              </span>
-            </p>
+            <p className="mt-6 text-gray-600 text-sm">Don't have an account?{" "}<span onClick={() => setIsLoginView(false)} className="text-purple-600 font-semibold cursor-pointer hover:underline">SIGN UP</span></p>
           </>
         ) : (
-          // --- SIGNUP VIEW ---
           <>
             <h1 className="text-3xl font-bold text-gray-800 mb-6">Create Account</h1>
             <form className="space-y-4" onSubmit={handleSignup}>
@@ -168,12 +163,7 @@ function App() {
               <div className="relative"><input type="password" name="password" placeholder="Password" className="w-full px-4 py-3 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400" required /><span className="absolute left-3 top-3.5 text-gray-400"><FaLock /></span></div>
               <button type="submit" className="w-full bg-black text-white py-3 rounded-md font-semibold hover:bg-gray-800 transition">SIGN UP</button>
             </form>
-            <p className="mt-8 text-gray-600 text-sm">
-              Already have an account?{" "}
-              <span onClick={() => setIsLoginView(true)} className="text-cyan-600 font-semibold cursor-pointer hover:underline">
-                LOGIN
-              </span>
-            </p>
+            <p className="mt-8 text-gray-600 text-sm">Already have an account?{" "}<span onClick={() => setIsLoginView(true)} className="text-cyan-600 font-semibold cursor-pointer hover:underline">LOGIN</span></p>
           </>
         )}
       </div>
@@ -182,3 +172,4 @@ function App() {
 }
 
 export default App;
+

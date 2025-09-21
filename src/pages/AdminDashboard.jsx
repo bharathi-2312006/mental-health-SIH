@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { db } from '../firebase';
 import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import { Link } from 'react-router-dom';
-import { FaUsers, FaClipboardCheck, FaChartBar, FaSignOutAlt, FaTimes } from 'react-icons/fa';
+import { FaUsers, FaClipboardCheck, FaChartBar, FaSignOutAlt, FaTimes, FaFilter } from 'react-icons/fa';
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
@@ -10,63 +10,69 @@ import bgImage from '../assets/admin-bg.jpg';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 function AdminDashboard() {
-  const [stats, setStats] = useState({ totalUsers: 0, highRisk: 0, screeningsCompleted: 0 });
-  const [monthlyData, setMonthlyData] = useState([]);
-  const [pieData, setPieData] = useState([]);
-  const [recentScreenings, setRecentScreenings] = useState([]);
+  // State for all data and UI
+  const [allScreenings, setAllScreenings] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [userHistory, setUserHistory] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null); // This will now control the filter
   const navigate = useNavigate();
 
+  // Fetch all data just once on component mount
   useEffect(() => {
-    // Listeners for real-time Firestore data
     const usersUnsub = onSnapshot(collection(db, "users"), (snapshot) => {
-      setStats(prev => ({ ...prev, totalUsers: snapshot.size }));
+      setTotalUsers(snapshot.size);
     });
 
     const screeningsQuery = query(collection(db, "screenings"), orderBy("createdAt", "desc"));
     const screeningsUnsub = onSnapshot(screeningsQuery, (snapshot) => {
-      const screenings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      
-      const highRiskCount = screenings.filter(s => s.result === 'High').length;
-      setRecentScreenings(screenings.slice(0, 7));
-      setStats(prev => ({ ...prev, screeningsCompleted: screenings.length, highRisk: highRiskCount }));
-
-      const monthlySummary = {};
-      screenings.forEach(s => {
-        if (s.createdAt) {
-          const month = s.createdAt.toDate().toLocaleString('default', { month: 'short', year: '2-digit' });
-          if (!monthlySummary[month]) {
-            monthlySummary[month] = { name: month, High: 0, Moderate: 0, Mild: 0 };
-          }
-          if(s.result) monthlySummary[month][s.result]++;
-        }
-      });
-      setMonthlyData(Object.values(monthlySummary).reverse());
-
-      const riskCounts = screenings.reduce((acc, s) => {
-        if(s.result) acc[s.result] = (acc[s.result] || 0) + 1;
-        return acc;
-      }, {});
-      setPieData([
-        { name: 'High Risk', value: riskCounts.High || 0, color: '#ef4444' },
-        { name: 'Moderate Risk', value: riskCounts.Moderate || 0, color: '#f59e0b' },
-        { name: 'Mild Risk', value: riskCounts.Mild || 0, color: '#22c55e' },
-      ]);
-
+      setAllScreenings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
-    return () => { usersUnsub(); screeningsUnsub(); };
+
+    return () => {
+      usersUnsub();
+      screeningsUnsub();
+    };
   }, []);
 
-  useEffect(() => {
-    if (selectedUser) {
-      const historyQuery = query(collection(db, "screenings"), where("userId", "==", selectedUser.userId), orderBy("createdAt", "desc"));
-      const unsub = onSnapshot(historyQuery, snapshot => setUserHistory(snapshot.docs.map(doc => doc.data())));
-      return () => unsub();
-    }
-  }, [selectedUser]);
+  // --- DERIVED STATE: This is where the magic happens ---
+  // The data displayed will be either all screenings or just the selected user's
+  const displayedScreenings = selectedUser
+    ? allScreenings.filter(s => s.userId === selectedUser.userId)
+    : allScreenings;
+
+  // Calculate stats based on the currently displayed data
+  const screeningsCompleted = displayedScreenings.length;
+  const highRiskCount = displayedScreenings.filter(s => s.result === 'High').length;
+  const recentScreenings = displayedScreenings.slice(0, 7);
+
+  // Process data for the charts based on the currently displayed data
+  const monthlyData = useMemo(() => {
+    const monthlySummary = {};
+    displayedScreenings.forEach(s => {
+      if (s.createdAt) {
+        const month = s.createdAt.toDate().toLocaleString('default', { month: 'short', year: '2-digit' });
+        if (!monthlySummary[month]) {
+          monthlySummary[month] = { name: month, High: 0, Moderate: 0, Mild: 0 };
+        }
+        if (s.result) monthlySummary[month][s.result]++;
+      }
+    });
+    return Object.values(monthlySummary).reverse();
+  }, [displayedScreenings]);
+
+  const pieData = useMemo(() => {
+    const riskCounts = displayedScreenings.reduce((acc, s) => {
+      if (s.result) acc[s.result] = (acc[s.result] || 0) + 1;
+      return acc;
+    }, {});
+    return [
+      { name: 'High Risk', value: riskCounts.High || 0, color: '#ef4444' },
+      { name: 'Moderate Risk', value: riskCounts.Moderate || 0, color: '#f59e0b' },
+      { name: 'Mild Risk', value: riskCounts.Mild || 0, color: '#22c55e' },
+    ];
+  }, [displayedScreenings]);
+
 
   const handleLogout = () => { signOut(auth).then(() => navigate('/')); };
 
@@ -86,10 +92,21 @@ function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {loading ? <p className="text-center text-white">Loading analytics...</p> : (
           <>
+            {/* Filter Status Banner */}
+            {selectedUser && (
+              <div className="bg-blue-500/20 border border-blue-400 text-white p-4 rounded-xl mb-8 flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold flex items-center gap-2"><FaFilter /> Filter Active</h3>
+                  <p className="text-sm">Showing analytics for: <strong>{selectedUser.userName}</strong></p>
+                </div>
+                <button onClick={() => setSelectedUser(null)} className="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-md text-sm">Clear Filter</button>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <StatCard icon={<FaUsers />} title="Total Users" value={stats.totalUsers} />
-              <StatCard icon={<FaClipboardCheck />} title="Total Screenings" value={stats.screeningsCompleted} />
-              <StatCard icon={<FaChartBar />} title="High-Risk Users" value={stats.highRisk} />
+              <StatCard icon={<FaUsers />} title="Total Users" value={totalUsers} />
+              <StatCard icon={<FaClipboardCheck />} title="Screenings Shown" value={screeningsCompleted} />
+              <StatCard icon={<FaChartBar />} title="High-Risk Screenings" value={highRiskCount} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -124,20 +141,15 @@ function AdminDashboard() {
 
             <div className="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
               <h2 className="text-xl font-bold text-white mb-4">Recent Screenings</h2>
+              <p className="text-sm text-white/60 mb-4">Click a user to filter all analytics.</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-white">
                   <thead>
-                    <tr className="border-b border-white/20">
-                      <th className="p-3 text-sm font-semibold">User Name</th>
-                      <th className="p-3 text-sm font-semibold">Result</th>
-                      <th className="p-3 text-sm font-semibold">Age</th>
-                      <th className="p-3 text-sm font-semibold">Gender</th>
-                      <th className="p-3 text-sm font-semibold">Date</th>
-                    </tr>
+                    <tr className="border-b border-white/20"><th className="p-3 text-sm font-semibold">User Name</th><th className="p-3 text-sm font-semibold">Result</th><th className="p-3 text-sm font-semibold">Age</th><th className="p-3 text-sm font-semibold">Gender</th><th className="p-3 text-sm font-semibold">Date</th></tr>
                   </thead>
                   <tbody>
                     {recentScreenings.map(screening => (
-                      <tr key={screening.id} className="border-b border-white/10 hover:bg-white/10 cursor-pointer" onClick={() => setSelectedUser(screening)}>
+                      <tr key={screening.id} className="border-b border-white/10 hover:bg-white/20 cursor-pointer" onClick={() => setSelectedUser(screening)}>
                         <td className="p-3 font-medium">{screening.userName}</td>
                         <td className="p-3"><span className={`px-2 py-1 inline-block rounded-full text-xs font-semibold ${screening.result === 'High' ? 'bg-red-500/70 text-white' : screening.result === 'Moderate' ? 'bg-yellow-500/70 text-white' : 'bg-green-500/70 text-white'}`}>{screening.result}</span></td>
                         <td className="p-3">{screening.age}</td>
@@ -152,25 +164,6 @@ function AdminDashboard() {
           </>
         )}
       </main>
-
-      {selectedUser && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative">
-            <button onClick={() => setSelectedUser(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><FaTimes size={20} /></button>
-            <h2 className="text-2xl font-bold text-gray-800 mb-1">Screening History</h2>
-            <p className="text-gray-600 mb-4">{selectedUser.userName}</p>
-            <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
-              {userHistory.map((entry, index) => (
-                <div key={index} className="border-l-4 p-3 rounded-r-lg bg-gray-50" style={{ borderColor: entry.result === 'High' ? '#ef4444' : entry.result === 'Moderate' ? '#f59e0b' : '#22c55e' }}>
-                  <p className="font-semibold text-gray-800">{entry.result} (Score: {entry.score})</p>
-                  <p className="text-sm text-gray-500">{entry.createdAt?.toDate().toLocaleString()}</p>
-                  <p className="text-xs text-gray-400 mt-1">Age: {entry.age}, Gender: {entry.gender}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,60 +1,53 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { db } from '../firebase';
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { Link } from 'react-router-dom';
-import { FaUsers, FaClipboardCheck, FaChartBar, FaSignOutAlt, FaTimes, FaFilter } from 'react-icons/fa';
+import { FaUsers, FaClipboardCheck, FaChartBar, FaSignOutAlt, FaFilter } from 'react-icons/fa';
 import { signOut } from "firebase/auth";
 import { auth } from '../firebase';
 import { useNavigate } from 'react-router-dom';
-import bgImage from '../assets/admin-bg.jpg';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import NeuralNetworkCanvas from '../components/NeuralNetwork.jsx'; // 1. Import the new animation
 
 function AdminDashboard() {
-  // State for all data and UI
   const [allScreenings, setAllScreenings] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState(null); // This will now control the filter
+  const [selectedUser, setSelectedUser] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch all data just once on component mount
   useEffect(() => {
+    // Listeners for real-time Firestore data
     const usersUnsub = onSnapshot(collection(db, "users"), (snapshot) => {
       setTotalUsers(snapshot.size);
     });
-
     const screeningsQuery = query(collection(db, "screenings"), orderBy("createdAt", "desc"));
     const screeningsUnsub = onSnapshot(screeningsQuery, (snapshot) => {
       setAllScreenings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
-
     return () => {
       usersUnsub();
       screeningsUnsub();
     };
   }, []);
 
-  // --- DERIVED STATE: This is where the magic happens ---
-  // The data displayed will be either all screenings or just the selected user's
+  // Derived state for dynamic filtering
   const displayedScreenings = selectedUser
     ? allScreenings.filter(s => s.userId === selectedUser.userId)
     : allScreenings;
-
-  // Calculate stats based on the currently displayed data
+  
   const screeningsCompleted = displayedScreenings.length;
   const highRiskCount = displayedScreenings.filter(s => s.result === 'High').length;
   const recentScreenings = displayedScreenings.slice(0, 7);
 
-  // Process data for the charts based on the currently displayed data
+  // Memoized calculations for charts
   const monthlyData = useMemo(() => {
     const monthlySummary = {};
     displayedScreenings.forEach(s => {
       if (s.createdAt) {
         const month = s.createdAt.toDate().toLocaleString('default', { month: 'short', year: '2-digit' });
-        if (!monthlySummary[month]) {
-          monthlySummary[month] = { name: month, High: 0, Moderate: 0, Mild: 0 };
-        }
+        if (!monthlySummary[month]) monthlySummary[month] = { name: month, High: 0, Moderate: 0, Mild: 0 };
         if (s.result) monthlySummary[month][s.result]++;
       }
     });
@@ -73,12 +66,14 @@ function AdminDashboard() {
     ];
   }, [displayedScreenings]);
 
-
   const handleLogout = () => { signOut(auth).then(() => navigate('/')); };
 
   return (
-    <div className="min-h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bgImage})` }}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+    <div className="min-h-screen bg-gray-900">
+      {/* 2. Add the animated background */}
+      <NeuralNetworkCanvas />
+      <div className="absolute inset-0 bg-black/60"></div>
+      
       <header className="relative z-10 bg-white/10 backdrop-blur-md shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-white">Admin Analytics</h1>
@@ -92,7 +87,6 @@ function AdminDashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {loading ? <p className="text-center text-white">Loading analytics...</p> : (
           <>
-            {/* Filter Status Banner */}
             {selectedUser && (
               <div className="bg-blue-500/20 border border-blue-400 text-white p-4 rounded-xl mb-8 flex justify-between items-center">
                 <div>

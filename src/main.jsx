@@ -1,13 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
-import "./index.css";
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import './index.css';
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+import './i18n'; // Import the i18next configuration
+
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
+    {/* Add Suspense for translations to load */}
+    <Suspense fallback="Loading...">
       <App />
-    </BrowserRouter>
-  </React.StrictMode>
+    </Suspense>
+  </React.StrictMode>,
 );

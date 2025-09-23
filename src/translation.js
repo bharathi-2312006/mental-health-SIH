@@ -1,0 +1,311 @@
+// This file holds all the text for your application.
+const translations = {
+  en: {
+    // --- Login/Signup ---
+    welcome: "Welcome Back",
+    createAccount: "Create Account",
+    email: "Email",
+    password: "Password",
+    fullName: "Full Name",
+    login: "LOGIN",
+    signup: "SIGN UP",
+    orSignInWith: "Or sign in with",
+    noAccount: "Don't have an account?",
+    haveAccount: "Already have an account?",
+
+    // --- Dashboard ---
+    home: "Home",
+    screeningTitle: "Mental Health Screening",
+    screeningDesc: "A confidential questionnaire to understand your needs.",
+    aiCoachTitle: "AI Wellness Coach",
+    aiCoachDesc: "Chat with our AI for immediate, supportive guidance.",
+    resourcesTitle: "Interactive Resources",
+    resourcesDesc: "Fun, engaging activities to boost your mood and relax.",
+    myJourneyTitle: "My Journey",
+    myJourneyDesc: "Track your screening history and private journal entries.",
+    dashboardGreeting: "Welcome to your personal wellness space.",
+    greetingMorning: "Good morning",
+    greetingAfternoon: "Good afternoon",
+    greetingEvening: "Good evening",
+
+    // --- Chat Hub ---
+    chatHubTitle: "How would you like to connect?",
+    chatHubDesc: "Choose the option you're most comfortable with.",
+    textChatTitle: "Text Chat",
+    textChatDesc: "Chat with our friendly AI for instant, text-based support.",
+    voiceChatTitle: "Voice Chat",
+    voiceChatDesc: "Talk with our AI in a voice conversation.",
+    videoCallTitle: "Video Call",
+    videoCallDesc: "Schedule a private session with a professional counselor.",
+    
+    // --- Text/Voice Chat ---
+    chatDisclaimer: "This AI is for informational purposes and is not a replacement for professional medical advice.",
+    typeMessage: "Type your message...",
+    voiceAssistantTitle: "MindWell AI Voice Assistant",
+    voiceAssistantDesc: "Your personal wellness companion",
+    clickToStart: "Click to Start",
+    listening: "Listening...",
+    thinking: "Thinking...",
+    youSaid: "You said:",
+
+    // --- Booking ---
+    bookingDetailsTitle: "Your Details",
+    height: "Height (cm)",
+    weight: "Weight (kg)",
+    selectDate: "Select a Date",
+    selectTime: "Select a Time",
+    yourSelection: "Your Selection:",
+    date: "Date",
+    time: "Time",
+    notSelected: "Not selected",
+    confirmAppointment: "Confirm Appointment",
+    bookingConfirmedTitle: "Appointment Confirmed!",
+    bookingConfirmedDesc: "Your session has been successfully booked.",
+    bookAnother: "Book Another",
+
+    // --- Resources ---
+    resourcesPageTitle: "Daily Wellness Challenges",
+    resourcesPageDesc: "Complete these activities to boost your well-being.",
+    resources: {
+      playlistTitle: 'Feel-Good Playlist',
+      playlistChallenge: 'Challenge: Boost your mood with 10 minutes of happy, uplifting music on Spotify.',
+      funnyVideoTitle: 'Watch a Funny Video',
+      funnyVideoChallenge: 'Challenge: Laughter is great for wellness. Watch a short, funny video for a quick dose of happiness.',
+      jokesTitle: 'A Dose of Laughter',
+      jokesChallenge: 'Challenge: Bring a smile to your face by reading a few lighthearted jokes.',
+      breathingTitle: 'Mindful Breathing',
+      breathingChallenge: 'Challenge: Calm your mind and reduce stress with a guided relaxation exercise.',
+      stressReliefTitle: 'Digital Stress Relief',
+      stressReliefChallenge: 'Challenge: Take a quick break with some oddly satisfying virtual bubble wrap.',
+      gratitudeTitle: 'Gratitude Moment',
+      gratitudeChallenge: 'Challenge: Open your journal and write down three small things you are grateful for right now.',
+    },
+    
+    // --- My Journey ---
+    myJourneyPageTitle: "My Wellness Journey",
+    screeningHistory: "Screening History",
+    privateJournal: "Private Journal",
+    yourProgress: "Your Progress",
+    loadingHistory: "Loading history...",
+    noScreenings: "You haven't completed any screenings yet.",
+    riskLevel: "Risk Level",
+    saveEntry: "Save Entry",
+    writeThoughts: "Write down your thoughts...",
+
+    // --- New Screening Page ---
+    screeningNew: {
+      introTitle: "Let's Get Started",
+      introDesc: "Please provide a few details to help us understand your profile.",
+      age: "Age",
+      gender: "Gender",
+      selectGender: "Select Gender",
+      male: "Male",
+      female: "Female",
+      other: "Other",
+      start: "Next: Start Questionnaire",
+      questionnaireTitle: "QUESTIONNAIRE",
+      previous: "← Previous",
+      next: "Next →",
+      finish: "Finish",
+      questions: {
+          q1: 'Over the past week, have you felt unable to relax due to work/school pressure?',
+          q2: 'How often do you feel nervous or anxious in social situations?',
+          q3: 'Little interest or pleasure in doing things?',
+          q4: 'Feeling down, depressed, or hopeless?',
+          q5: 'Feeling nervous, anxious, or on edge?',
+          q6: 'Worrying too much about different things?',
+          q7: 'Have you recently been able to concentrate on what you’re doing?',
+          q8: 'Have you recently felt constantly under strain?',
+      },
+      options: {
+          stressed: 'Stressed',
+          relaxed: 'Relaxed',
+          veryOften: 'Very Often',
+          rarely: 'Rarely',
+          noInterest: 'No, I enjoy activities.',
+          yesLostInterest: 'Yes, I’ve lost interest.',
+          feelOkay: 'No, I feel okay.',
+          feelHopeless: 'Yes, I often feel hopeless.',
+          feelCalm: 'No, I feel calm.',
+          feelNervous: 'Yes, I feel nervous often.',
+          manageWorries: 'No, I manage worries well.',
+          worryALot: 'Yes, I worry a lot.',
+          canFocus: 'Yes, I can focus.',
+          cannotFocus: 'No, I find it hard to concentrate.',
+          feelRelaxed: 'No, I feel relaxed.',
+          feelStrain: 'Yes, I feel under pressure.',
+      }
+    },
+    
+    // --- Misc ---
+    explore: "Explore",
+    goBack: "Go Back",
+    completed: "Completed!",
+  },
+  ta: {
+    // --- Login/Signup ---
+    welcome: "மீண்டும் வரவேற்கிறோம்",
+    createAccount: "கணக்கை உருவாக்கு",
+    email: "மின்னஞ்சல்",
+    password: "கடவுச்சொல்",
+    fullName: "முழு பெயர்",
+    login: "உள்நுழை",
+    signup: "பதிவு செய்க",
+    orSignInWith: "அல்லது இதைப் பயன்படுத்தி உள்நுழையவும்",
+    noAccount: "கணக்கு இல்லையா?",
+    haveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
+
+    // --- Dashboard ---
+    home: "முகப்பு",
+    screeningTitle: "மனநல பரிசோதனை",
+    screeningDesc: "உங்கள் தேவைகளைப் புரிந்துகொள்ள ஒரு ரகசிய கேள்வித்தாள்.",
+    aiCoachTitle: "AI ஆரோக்கிய பயிற்சியாளர்",
+    aiCoachDesc: "உடனடி, ஆதரவான வழிகாட்டுதலுக்கு எங்கள் AI உடன் அரட்டையடிக்கவும்.",
+    resourcesTitle: "ஊடாடும் ஆதாரங்கள்",
+    resourcesDesc: "உங்கள் மனநிலையை அதிகரிக்கவும் ஓய்வெடுக்கவும் வேடிக்கையான செயல்பாடுகள்.",
+    myJourneyTitle: "என் பயணம்",
+    myJourneyDesc: "உங்கள் பரிசோதனை வரலாறு மற்றும் தனிப்பட்ட பத்திரிகை உள்ளீடுகளைக் கண்காணிக்கவும்.",
+    dashboardGreeting: "உங்கள் தனிப்பட்ட ஆரோக்கிய இடத்திற்கு வரவேற்கிறோம்.",
+    greetingMorning: "காலை வணக்கம்",
+    greetingAfternoon: "மதிய வணக்கம்",
+    greetingEvening: "மாலை வணக்கம்",
+
+    // --- Chat Hub ---
+    chatHubTitle: "நீங்கள் எப்படி இணைய விரும்புகிறீர்கள்?",
+    chatHubDesc: "நீங்கள் மிகவும் வசதியாக உணரும் விருப்பத்தைத் தேர்வுசெய்க.",
+    textChatTitle: "உரை அரட்டை",
+    textChatDesc: "உடனடி, உரை அடிப்படையிலான ஆதரவிற்காக எங்கள் நட்பு AI உடன் அரட்டையடிக்கவும்.",
+    voiceChatTitle: "குரல் அரட்டை",
+    voiceChatDesc: "எங்கள் AI உடன் குரல் உரையாடலில் பேசுங்கள்.",
+    videoCallTitle: "காணொளி அழைப்பு",
+    videoCallDesc: "ஒரு தொழில்முறை ஆலோசகருடன் ஒரு தனிப்பட்ட மற்றும் பாதுகாப்பான வீடியோ அமர்வை திட்டமிடுங்கள்.",
+    
+    // --- Text/Voice Chat ---
+    chatDisclaimer: "இந்த AI தகவல் நோக்கங்களுக்காக மட்டுமே மற்றும் தொழில்முறை மருத்துவ ஆலோசனைக்கு மாற்றாக இல்லை.",
+    typeMessage: "உங்கள் செய்தியைத் தட்டச்சு செய்க...",
+    voiceAssistantTitle: "மைண்ட்வெல் AI குரல் உதவியாளர்",
+    voiceAssistantDesc: "உங்கள் தனிப்பட்ட ஆரோக்கிய துணை.",
+    clickToStart: "தொடங்க கிளிக் செய்க",
+    listening: "கேட்கிறது...",
+    thinking: "சிந்திக்கிறது...",
+    youSaid: "நீங்கள் சொன்னது:",
+    
+    // --- Booking ---
+    bookingDetailsTitle: "உங்கள் விவரங்கள்",
+    height: "உயரம் (செமீ)",
+    weight: "எடை (கிலோ)",
+    selectDate: "தேதியைத் தேர்ந்தெடுக்கவும்",
+    selectTime: "நேரத்தைத் தேர்ந்தெடுக்கவும்",
+    yourSelection: "உங்கள் தேர்வு:",
+    date: "தேதி",
+    time: "நேரம்",
+    notSelected: "தேர்ந்தெடுக்கப்படவில்லை",
+    confirmAppointment: "சந்திப்பை உறுதிப்படுத்தவும்",
+    bookingConfirmedTitle: "சந்திப்பு உறுதி செய்யப்பட்டது!",
+    bookingConfirmedDesc: "உங்கள் அமர்வு வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது.",
+    bookAnother: "மற்றொன்றை பதிவு செய்",
+
+    // --- Resources ---
+    resourcesPageTitle: "தினசரி ஆரோக்கிய சவால்கள்",
+    resourcesPageDesc: "உங்கள் நல்வாழ்வை அதிகரிக்க இந்த செயல்பாடுகளை முடிக்கவும்.",
+    resources: {
+      playlistTitle: 'உற்சாகமூட்டும் இசை',
+      playlistChallenge: 'சவால்: ஸ்பாட்டிஃபையில் 10 நிமிடங்கள் மகிழ்ச்சியான இசையைக் கேட்டு உங்கள் மனநிலையை அதிகரிக்கவும்.',
+      funnyVideoTitle: 'வேடிக்கையான காணொளியைப் பாருங்கள்',
+      funnyVideoChallenge: 'சவால்: ஆரோக்கியத்திற்கு சிரிப்பு சிறந்தது. ஒரு சிறிய, வேடிக்கையான வீடியோவைப் பார்த்து மகிழ்ச்சியைப் பெறுங்கள்.',
+      jokesTitle: 'சிரிப்பு மருந்து',
+      jokesChallenge: 'சவால்: சில நகைச்சுவைகளைப் படித்து உங்கள் முகத்தில் புன்னகையை வரவழைக்கவும்.',
+      breathingTitle: 'கவனத்துடன் சுவாசித்தல்',
+      breathingChallenge: 'சவால்: வழிகாட்டப்பட்ட தளர்வுப் பயிற்சியுடன் உங்கள் மனதை அமைதிப்படுத்தி மன அழுத்தத்தைக் குறைக்கவும்.',
+      stressReliefTitle: 'டிஜிட்டல் மன அழுத்த நிவாரணம்',
+      stressReliefChallenge: 'சவால்: திருப்திகரமான மெய்நிகர் குமிழி உறையுடன் ஒரு சிறிய இடைவெளி எடுக்கவும்.',
+      gratitudeTitle: 'நன்றியுணர்வு தருணம்',
+      gratitudeChallenge: 'சவால்: உங்கள் பத்திரிகையைத் திறந்து, நீங்கள் இப்போது நன்றியுள்ள மூன்று சிறிய விஷயங்களை எழுதுங்கள்.',
+    },
+    
+    // --- My Journey ---
+    myJourneyPageTitle: "என் ஆரோக்கிய பயணம்",
+    screeningHistory: "பரிசோதனை வரலாறு",
+    privateJournal: "தனிப்பட்ட பத்திரிகை",
+    yourProgress: "உங்கள் முன்னேற்றம்",
+    loadingHistory: "வரலாறு ஏற்றப்படுகிறது...",
+    noScreenings: "நீங்கள் இன்னும் எந்த பரிசோதனைகளையும் முடிக்கவில்லை.",
+    riskLevel: "ஆபத்து நிலை",
+    saveEntry: "உள்ளீட்டைச் சேமி",
+    writeThoughts: "உங்கள் எண்ணங்களை எழுதுங்கள்...",
+
+    // --- New Screening Page ---
+    screeningNew: {
+      introTitle: "தொடங்குவோம்",
+      introDesc: "உங்கள் சுயவிவரத்தைப் புரிந்துகொள்ள எங்களுக்கு உதவ சில விவரங்களை வழங்கவும்.",
+      age: "வயது",
+      gender: "பாலினம்",
+      selectGender: "பாலினத்தைத் தேர்ந்தெடுக்கவும்",
+      male: "ஆண்",
+      female: "பெண்",
+      other: "மற்றவை",
+      start: "அடுத்து: கேள்வித்தாளைத் தொடங்கு",
+      questionnaireTitle: "கேள்வித்தாள்",
+      previous: "← முந்தைய",
+      next: "அடுத்து →",
+      finish: "முடி",
+      questions: {
+          q1: 'கடந்த வாரத்தில், வேலை/பள்ளி அழுத்தம் காரணமாக ஓய்வெடுக்க முடியவில்லை என்று உணர்ந்தீர்களா?',
+          q2: 'சமூக சூழ்நிலைகளில் நீங்கள் எவ்வளவு அடிக்கடி பதட்டமாக அல்லது கவலையாக உணர்கிறீர்கள்?',
+          q3: 'செயல்களில் சிறிதளவு ஆர்வம் அல்லது மகிழ்ச்சி உள்ளதா?',
+          q4: 'மனச்சோர்வாக, மன அழுத்தமாக அல்லது நம்பிக்கையற்றதாக உணர்கிறீர்களா?',
+          q5: 'பதட்டமாக, கவலையாக, அல்லது விளிம்பில் உணர்கிறீர்களா?',
+          q6: 'வெவ்வேறு விஷயங்களைப் பற்றி அதிகமாக கவலைப்படுகிறீர்களா?',
+          q7: 'சமீபத்தில் நீங்கள் செய்வதில் கவனம் செலுத்த முடிந்ததா?',
+          q8: 'சமீபத்தில் தொடர்ந்து அழுத்தத்தில் இருப்பதாக உணர்ந்தீர்களா?',
+      },
+      options: {
+          stressed: 'அழுத்தமாக',
+          relaxed: 'நிதானமாக',
+          veryOften: 'மிக அடிக்கடி',
+          rarely: 'அரிதாக',
+          noInterest: 'இல்லை, நான் மகிழ்கிறேன்.',
+          yesLostInterest: 'ஆம், ஆர்வத்தை இழந்துவிட்டேன்.',
+          feelOkay: 'இல்லை, நான் நலமாக உணர்கிறேன்.',
+          feelHopeless: 'ஆம், நான் அடிக்கடி நம்பிக்கையற்றவனாக உணர்கிறேன்.',
+          feelCalm: 'இல்லை, நான் அமைதியாக உணர்கிறேன்.',
+          feelNervous: 'ஆம், நான் அடிக்கடி பதட்டமாக உணர்கிறேன்.',
+          manageWorries: 'இல்லை, நான் கவலைகளை நன்கு நிர்வகிக்கிறேன்.',
+          worryALot: 'ஆம், நான் அதிகமாக கவலைப்படுகிறேன்.',
+          canFocus: 'ஆம், நான் கவனம் செலுத்த முடியும்.',
+          cannotFocus: 'இல்லை, கவனம் செலுத்துவது கடினமாக உள்ளது.',
+          feelRelaxed: 'இல்லை, நான் நிதானமாக உணர்கிறேன்.',
+          feelStrain: 'ஆம், நான் அழுத்தத்தில் உணர்கிறேன்.',
+      }
+    },
+    
+    // --- Misc ---
+    explore: "ஆராயுங்கள்",
+    goBack: "திரும்பிச் செல்",
+    completed: "முடிந்தது!",
+  },
+  hi: {
+    // --- Add Hindi translations for greetings, resources, and screeningNew here ---
+    greetingMorning: "सुप्रभात",
+    greetingAfternoon: "नमस्कार",
+    greetingEvening: "शुभ संध्या",
+    // ...
+  },
+  ur: {
+    // --- Add Urdu translations for greetings, resources, and screeningNew here ---
+    greetingMorning: "صبح بخیر",
+    greetingAfternoon: "دوپہر بخیر",
+    greetingEvening: "شام بخیر",
+    // ...
+  },
+  ks: {
+    // --- Add Kashmiri translations for greetings, resources, and screeningNew here ---
+    greetingMorning: "صبح بخیر",
+    greetingAfternoon: "دوپہر بخیر",
+    greetingEvening: "شام بخیر",
+    // ...
+  },
+};
+
+export default translations;
+

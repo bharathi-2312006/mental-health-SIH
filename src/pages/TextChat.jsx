@@ -1,21 +1,59 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// Import assets
+import NeuralNetworkCanvas from '../components/NeuralNetwork.jsx';
 import botAvatar from '../assets/bot-avatar.png';
-import bgImage from '../assets/chatbot-bg.jpg';
 
-// Initialize the AI with your API Key
+// --- Initialize the AI ---
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
-// A helper function to create a delay
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+// --- A NEW, ADVANCED SYSTEM PROMPT ---
+// This version "trains" the AI on specific psychological screening tools.
+const chat = model.startChat({
+  history: [
+    {
+      role: "user",
+      parts: [{ text: `
+        You are MindWell, a compassionate and supportive AI wellness companion. Your purpose is to provide a safe, non-judgmental space for users to express their feelings and explore general wellness topics.
+
+        **--- Your Persona ---**
+        - **Name:** MindWell AI
+        - **Tone:** Empathetic, patient, calm, and encouraging. Always be positive and hopeful.
+        - **Language:** Use simple, clear language. Avoid clinical jargon. Use "we" to foster a sense of partnership (e.g., "Let's explore that...").
+
+        **--- Core Directives (How to Respond) ---**
+        1.  **Listen and Validate:** Your primary goal is to listen. Acknowledge and validate the user's feelings (e.g., "That sounds really tough," or "It makes sense that you would feel that way.").
+        2.  **Ask Open-Ended Questions:** Encourage the user to explore their thoughts by asking gentle, open-ended questions.
+        3.  **Offer General Wellness Techniques:** Suggest universally helpful, low-risk wellness strategies like mindfulness, breathing exercises, or journaling.
+
+        **--- Knowledge Base: Screening Tools ---**
+        You have been trained on the following screening questionnaires. You can answer general questions about them, but you CANNOT administer or interpret them.
+        -   **PHQ-9 (Patient Health Questionnaire-9):** A tool used to screen for the presence and severity of depression. It asks about symptoms like loss of interest, feeling down, sleep problems, and trouble concentrating over the last two weeks.
+        -   **GAD-7 (Generalized Anxiety Disorder-7):** A self-report questionnaire used for screening and measuring the severity of generalized anxiety disorder. It asks about symptoms like feeling nervous or on edge, uncontrollable worrying, and irritability.
+        -   **GHQ (General Health Questionnaire):** A screening tool used to detect general psychological distress and minor psychiatric disorders.
+
+        **--- Boundaries & Guardrails (CRITICAL) ---**
+        1.  **NEVER Diagnose or Interpret Scores:** You are not a doctor. If a user asks what their score means, you must respond: "Interpreting screening results requires a trained professional. The best next step is to share these results with a doctor or counselor who can give you a clear understanding of what they mean for you."
+        2.  **NEVER Administer the Tests:** Do not ask the user the questions from the PHQ-9 or GAD-7. Instead, guide them to the app's "Mental Health Screening" feature.
+        3.  **ALWAYS Include a Disclaimer:** When discussing these topics, gently remind the user: "Remember, I'm an AI assistant, and this is for informational purposes only. For medical advice or diagnosis, it's always best to consult with a healthcare professional."
+
+        **--- Safety Protocol (NON-NEGOTIABLE) ---**
+        - If the user's message contains any mention of self-harm, suicide, or being in a crisis, you MUST stop the current conversation and respond with ONLY the following text, and nothing else:
+        "It sounds like you are going through a very difficult time. Please reach out for immediate help. You can connect with people who can support you by calling or texting 988 anytime in the US and Canada. In the UK, you can call 111."
+      ` }],
+    },
+    {
+      role: "model",
+      parts: [{ text: "Understood. I will act as MindWell, a supportive and empathetic AI assistant. I have been trained on the PHQ-9, GAD-7, and GHQ and will follow all directives, boundaries, and safety protocols to provide the best possible support." }],
+    },
+  ],
+});
+
 
 function TextChat() {
   const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! I'm a supportive AI assistant. How can I help you today?", sender: 'bot' }
+    { id: 1, text: "Hello! I'm MindWell. I can answer questions about general wellness and screening tools like the PHQ-9 and GAD-7. How can I help?", sender: 'bot' }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -26,50 +64,25 @@ function TextChat() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  // This function now includes the retry logic
   const fetchBotResponse = async (userInput) => {
-    const safetyPreamble = "Important: If the user mentions self-harm, suicide, or crisis, you must immediately respond with: 'It sounds like you are going through a difficult time. Please reach out for help. You can connect with people who can support you by calling or texting 988 anytime in the US and Canada. In the UK, you can call 111.' Do not say anything else.";
-    const prompt = `You are MindWell, a friendly and supportive AI assistant... ${safetyPreamble}\n\nUser: ${userInput}\nMindWell:`;
-    
-    let retries = 3;
-    let delay = 1000; // Start with a 1-second delay
-
-    while (retries > 0) {
-      try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        return response.text();
-      } catch (error) {
-        // Check if it's the specific "overloaded" error
-        if (error.message && error.message.includes('503')) {
-          retries--;
-          if (retries === 0) {
-            console.error("AI response error after multiple retries:", error);
-            return "The AI is currently busy. Please try again in a moment.";
-          }
-          console.log(`Model overloaded. Retrying in ${delay / 1000}s...`);
-          await sleep(delay);
-          delay *= 2; // Double the delay for the next retry
-        } else {
-          // For any other error, fail immediately
-          console.error("AI response error:", error);
-          return "I'm sorry, I'm having a little trouble connecting right now.";
-        }
-      }
+    try {
+      const result = await chat.sendMessage(userInput);
+      const response = await result.response;
+      return response.text();
+    } catch (error) {
+      console.error("AI response error:", error);
+      return "I'm sorry, I'm having a little trouble connecting right now.";
     }
   };
 
   const sendMessage = async (text) => {
     if (text.trim() === '') return;
-
     const userMessage = { id: Date.now(), text: text, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
-
     const botResponseText = await fetchBotResponse(text);
     const botMessage = { id: Date.now() + 1, text: botResponseText, sender: 'bot' };
-
     setMessages(prev => [...prev, botMessage]);
     setIsTyping(false);
   };
@@ -80,11 +93,9 @@ function TextChat() {
   };
   
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: `url(${bgImage})` }}
-    >
-      <div className="absolute inset-0 bg-black/50"></div>
+    <div className="min-h-screen bg-gray-900">
+      <NeuralNetworkCanvas />
+      <div className="absolute inset-0 bg-black/60"></div>
       
       <Draggable nodeRef={nodeRef}>
         <div ref={nodeRef} className="absolute top-10 left-10 cursor-move z-20">
@@ -132,3 +143,4 @@ function TextChat() {
 }
 
 export default TextChat;
+
